@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عرض سعر فني ومالي — مركز منابر الأمل لتأهيل الأطفال | شركة كاف لتطوير الأعمال</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900;1000&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --kaaf-navy: #040914;
+            --kaaf-navy-surface: #0a1128;
+            --kaaf-blue: #3B82F6;
+            --kaaf-blue-light: #60A5FA;
+            --kaaf-indigo: #6366F1;
+            --kaaf-purple: #8B5CF6;
+            --saudi-gold: #D4AF37;
+            --saudi-gold-light: #FCD34D;
+            --saudi-gold-glow: rgba(212, 175, 55, 0.4);
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--kaaf-navy);
+            color: #F8FAFC;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Fixed Background Canvas */
+        .bg-canvas-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -20;
+            object-fit: cover;
+            object-position: center;
+            filter: brightness(0.4) contrast(1.2) saturate(1.1);
+            transform: scale(1.02);
+        }
+
+        /* Dynamic Mesh Background Overlay */
+        .bg-canvas-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -10;
+            background: 
+                radial-gradient(circle at 85% 15%, rgba(59, 130, 246, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 15% 85%, rgba(139, 92, 246, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.12) 0%, transparent 55%),
+                linear-gradient(180deg, rgba(4, 9, 20, 0.88) 0%, rgba(10, 17, 40, 0.94) 50%, rgba(2, 6, 16, 0.98) 100%);
+            backdrop-filter: blur(8px);
+            pointer-events: none;
+        }
+
+        /* Shimmer Text Animation */
+        @keyframes shimmerGlow {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .gold-shimmer-text {
+            background: linear-gradient(90deg, #FCD34D 0%, #FFFFFF 25%, #D4AF37 50%, #FFFFFF 75%, #FCD34D 100%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shimmerGlow 4s linear infinite;
+        }
+
+        /* Enhanced Dynamic Motion Keyframes */
+        @keyframes moveDivider {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes pulseGlowRing {
+            0%, 100% {
+                box-shadow: 0 0 15px rgba(59, 130, 246, 0.3), 0 0 30px rgba(212, 175, 55, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 35px rgba(59, 130, 246, 0.7), 0 0 50px rgba(212, 175, 55, 0.5);
+            }
+        }
+
+        @keyframes floatSubtle {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(0.5deg); }
+        }
+
+        @keyframes badgeShimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(200%); }
+        }
+
+        /* Colorful Section Divider Lines with Motion */
+        .section-divider {
+            height: 4px;
+            width: 100%;
+            background: linear-gradient(90deg, transparent, #D4AF37, #3B82F6, #8B5CF6, #EC4899, #D4AF37, transparent);
+            background-size: 200% 100%;
+            animation: moveDivider 4s ease infinite;
+            border-radius: 9999px;
+            margin: 3rem 0;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6), 0 0 30px rgba(59, 130, 246, 0.5);
+            position: relative;
+        }
+
+        .section-divider::before {
+            content: '♦';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #FCD34D;
+            background-color: var(--kaaf-navy);
+            padding: 0 12px;
+            font-size: 12px;
+            animation: pulseGlowRing 2.5s infinite;
+            border-radius: 50%;
+        }
+
+        /* Motion Enhanced Card Styles */
+        .card-dark {
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(10, 17, 40, 0.88));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            animation: pulseGlowRing 6s infinite ease-in-out;
+        }
+
+        .card-dark::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #3B82F6, var(--saudi-gold), #8B5CF6, transparent);
+            animation: badgeShimmer 3.5s infinite linear;
+        }
+
+        .card-dark:hover {
+            border-color: rgba(212, 175, 55, 0.9);
+            box-shadow: 0 30px 60px -10px rgba(59, 130, 246, 0.45), 0 0 40px rgba(212, 175, 55, 0.35);
+            transform: translateY(-6px) scale(1.008);
+        }
+
+        .card-inner {
+            background: linear-gradient(135deg, rgba(11, 19, 43, 0.88), rgba(7, 13, 30, 0.85));
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 65, 85, 0.7);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card-inner:hover {
+            transform: translateY(-6px) scale(1.02);
+            border-color: var(--kaaf-blue);
+            box-shadow: 0 16px 35px rgba(59, 130, 246, 0.4), 0 0 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .motion-item {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .motion-item:hover {
+            transform: translateX(-6px) scale(1.02);
+            border-color: rgba(212, 175, 55, 0.8);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);
+        }
+
+        /* Scroll Reveal Motion Classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(45px) scale(0.96) rotateX(8deg);
+            perspective: 1000px;
+            transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0) scale(1) rotateX(0deg);
+        }
+
+        .pulse-badge {
+            animation: floatSubtle 3s ease-in-out infinite;
+        }
+
+        /* Header Gradient Bar */
+        .gradient-header {
+            background: linear-gradient(135deg, rgba(4, 9, 20, 0.95), rgba(30, 58, 138, 0.92), rgba(15, 23, 42, 0.94), rgba(88, 28, 135, 0.95));
+            background-size: 300% 300%;
+            animation: kaafNavGradient 12s ease infinite;
+            backdrop-filter: blur(16px);
+            border-bottom: 2px solid rgba(212, 175, 55, 0.8);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(59, 130, 246, 0.25);
+        }
+
+        @keyframes kaafNavGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glow-blue {
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.45);
+        }
+
+        .glow-gold {
+            box-shadow: 0 0 35px rgba(212, 175, 55, 0.4);
+        }
+
+        @keyframes floatGlowKaaf {
+            0%, 100% {
+                transform: translateY(0px) scale(1);
+                filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.8)) drop-shadow(0 0 25px rgba(212, 175, 55, 0.5));
+            }
+            50% {
+                transform: translateY(-8px) scale(1.04);
+                filter: drop-shadow(0 0 25px rgba(96, 165, 250, 0.95)) drop-shadow(0 0 35px rgba(252, 211, 77, 0.7));
+            }
+        }
+
+        @keyframes floatPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+
+        .floating-logo-container {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            z-index: 9999;
+            animation: floatGlowKaaf 3.5s ease-in-out infinite;
+        }
+
+        .whatsapp-float {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            animation: floatPulse 2.5s ease-in-out infinite;
+        }
+
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #040914;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #1E3A8A, #3B82F6);
+            border: 1px solid var(--saudi-gold);
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #60A5FA;
+        }
+
+        .badge-pill {
+            background: linear-gradient(90deg, rgba(30, 58, 138, 0.9), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(212, 175, 55, 0.6);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+<body class="antialiased pb-16 custom-scrollbar">
+
+    <!-- Fixed Canvas Background -->
+    <img src="https://i.ibb.co/PGhgmz8X/canvas1.png" alt="خلفية الهوية الرقمية" class="bg-canvas-fixed" onerror="this.style.display='none'">
+    <div class="bg-canvas-overlay"></div>
+
+    <!-- Floating Brand Logo (KAAF Marketing) -->
+    <div class="floating-logo-container hidden sm:block">
+        <a href="https://kaafmarketing.sa/" target="_blank" rel="noopener noreferrer" title="شركة كاف لتطوير الأعمال | KAAF Business Development">
+            <div class="w-16 h-16 sm:w-20 sm:h-20 bg-slate-900/95 backdrop-blur-md p-1.5 rounded-2xl border-2 border-blue-400/80 shadow-2xl flex items-center justify-center transition-transform hover:scale-110 glow-blue">
+                <img src="https://i.ibb.co/PZxBrJrr/1783599594349.jpg" alt="شعار كاف العائم" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/100x100/070D1E/3B82F6?text=KAAF'">
+            </div>
+        </a>
+    </div>
+
+    <!-- WhatsApp Floating Action -->
+    <a href="https://wa.me/966537553910" target="_blank" rel="noopener noreferrer" class="whatsapp-float group" title="تواصل معنا عبر الواتساب">
+        <div class="flex items-center gap-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-500 hover:to-indigo-500 text-white font-bold px-5 py-3.5 rounded-full shadow-2xl border border-amber-300 transition-all duration-300 hover:scale-105 glow-blue">
+            <svg class="w-6 h-6 fill-current text-white" viewBox="0 0 24 24">
+                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+            </svg>
+            <span class="text-xs sm:text-sm tracking-wide">تواصل عبر الواتساب</span>
+        </div>
+    </a>
+
+    <header class="gradient-header text-white pt-10 pb-16 px-4 sm:px-8 relative overflow-hidden">
+        <div class="absolute -top-12 -right-12 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
+        <div class="absolute -bottom-12 -left-12 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
+
+        <div class="max-w-6xl mx-auto text-center relative z-10">
+            <div class="inline-block mb-5 relative pulse-badge">
+                <a href="https://kaafmarketing.sa/" target="_blank" rel="noopener noreferrer" class="inline-block transition-transform duration-500 hover:scale-110">
+                    <div class="w-28 h-28 sm:w-36 sm:h-36 mx-auto bg-slate-900/95 p-2 rounded-3xl border-2 border-amber-400/90 shadow-2xl glow-gold flex items-center justify-center">
+                        <img src="https://i.ibb.co/PZxBrJrr/1783599594349.jpg" alt="شعار شركة كاف لتطوير الأعمال" class="w-full h-full object-cover rounded-2xl" onerror="this.src='https://placehold.co/150x150/070D1E/FCD34D?text=KAAF'">
+                    </div>
+                </a>
+            </div>
+
+            <div class="block">
+                <div class="inline-flex items-center gap-2 badge-pill px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold mb-4 text-blue-300 shadow-xl border border-amber-400/50 pulse-badge">
+                    <span class="text-amber-400">📄</span>
+                    <span>عرض سعر فني ومالي متكامل</span>
+                </div>
+            </div>
+
+            <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight mb-3 text-white drop-shadow-2xl gold-shimmer-text">
+                عرض سعر فني ومالي
+            </h1>
+            <p class="text-lg sm:text-2xl text-blue-300 font-bold mb-4 drop-shadow">
+                خدمة تحسين محركات البحث (SEO) والتطوير والتحسين الشامل للموقع الإلكتروني
+            </p>
+
+            <div class="inline-block bg-slate-900/95 backdrop-blur-xl px-8 py-3.5 rounded-2xl border border-amber-400/70 text-center shadow-2xl mt-2 mb-2 transition-transform hover:scale-105 duration-300">
+                <p class="text-xs sm:text-sm text-amber-200/90 font-medium">مقدم من: <a href="https://kaafmarketing.sa/" target="_blank" class="text-blue-400 font-extrabold hover:underline">شركة كاف لتطوير الأعمال</a></p>
+                <p class="text-base sm:text-xl font-extrabold text-white mt-1">موجه إلى: <span class="text-amber-300">مركز منابر الأمل لتأهيل الأطفال</span></p>
+                <div class="flex flex-wrap items-center justify-center gap-4 mt-2 text-xs text-slate-300">
+                    <span class="bg-blue-950/80 px-3 py-1 rounded-full border border-blue-500/40">الموقع الإلكتروني: <a href="https://mnabralamel.med.sa/" target="_blank" rel="noopener noreferrer" class="text-blue-300 hover:underline">https://mnabralamel.med.sa/</a></span>
+                    <span class="bg-purple-950/80 px-3 py-1 rounded-full border border-purple-500/40">مدة التعاقد: 3 أشهر</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-8 -mt-8 relative z-20 space-y-4">
+
+        <!-- أولاً: نبذة عن المشروع -->
+        <section class="card-dark rounded-3xl p-6 sm:p-8 shadow-2xl reveal">
+            <div class="border-r-4 border-blue-500 pr-4 mb-4">
+                <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
+                    <span class="text-blue-400 text-3xl">📌</span>
+                    <span>أولاً: نبذة عن المشروع</span>
+                </h2>
+            </div>
+
+            <div class="space-y-4 text-slate-300 leading-relaxed text-sm sm:text-base">
+                <p class="bg-slate-950/70 p-6 rounded-2xl border border-slate-800/90 text-slate-200 leading-relaxed shadow-inner">
+                    تقدم شركة كاف لتطوير الأعمال عرضها الفني والمالي لتنفيذ مشروع تحسين محركات البحث (SEO) للموقع الإلكتروني الخاص بمركز منابر الأمل، بهدف تعزيز الظهور الرقمي للمركز في نتائج محركات البحث، وزيادة فرص الوصول إلى الفئات المستهدفة من أولياء الأمور والمهتمين بخدمات تأهيل الأطفال.
+                </p>
+                <p class="bg-slate-900/60 p-5 rounded-2xl border border-slate-800 text-slate-300">
+                    ويشمل المشروع مجموعة من الأعمال التقنية والتسويقية والتصميمية المتكاملة، التي تستهدف رفع جودة الموقع الإلكتروني، وتحسين تجربة المستخدم، وتعزيز كفاءة ظهوره في نتائج البحث.
+                </p>
+            </div>
+        </section>
+
+        <!-- Colorful Section Divider -->
+        <div class="section-divider"></div>
+
+        <!-- ثانياً: نطاق الخدمات المقدمة -->
+        <section class="card-dark rounded-3xl p-6 sm:p-8 shadow-2xl reveal">
+            <div class="border-r-4 border-amber-400 pr-4 mb-6">
+                <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
+                    <span class="text-amber-400 font-mono text-3xl">02</span>
+                    <span>ثانياً: نطاق الخدمات المقدمة</span>
+                </h2>
+            </div>
+
+            <div class="space-y-6">
+
+                <!-- 1. SEO -->
+                <div class="card-inner p-6 rounded-2xl border-t-4 border-blue-500">
+                    <h3 class="text-xl font-extrabold text-blue-300 mb-4 flex items-center gap-2">
+                        <span>🔍</span>
+                        <span>1. تحسين محركات البحث (SEO)</span>
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-slate-200">
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-blue-400 font-bold">•</span>
+                            <span>إجراء تحليل شامل للموقع الإلكتروني وتقييم الوضع الحالي.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-blue-400 font-bold">•</span>
+                            <span>دراسة وتحليل الكلمات المفتاحية المرتبطة بخدمات المركز.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-blue-400 font-bold">•</span>
+                            <span>تحديد الكلمات المفتاحية المستهدفة وفقاً لطبيعة النشاط والموقع الجغرافي.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-blue-400 font-bold">•</span>
+                            <span>تحليل المنافسين وتحديد الفرص المتاحة لتحسين الظهور الرقمي.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-blue-400 font-bold">•</span>
+                            <span>تحسين العناوين الرئيسية والفرعية والوصف التعريفي للصفحات.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-blue-400 font-bold">•</span>
+                            <span>تحسين المحتوى النصي بما يتوافق مع معايير محركات البحث.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-blue-400 font-bold">•</span>
+                            <span>تحسين الروابط الداخلية بين صفحات الموقع.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-blue-400 font-bold">•</span>
+                            <span>تهيئة الصور والعناصر المرئية لمحركات البحث.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-blue-400 font-bold">•</span>
+                            <span>تحسين بنية الصفحات وتنظيم المحتوى.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-blue-400 font-bold">•</span>
+                            <span>العمل على تحسين الظهور في نتائج البحث المحلية (Local SEO).</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item col-span-1 sm:col-span-2 flex items-start gap-2">
+                            <span class="text-blue-400 font-bold">•</span>
+                            <span>متابعة أداء الكلمات المفتاحية ومؤشرات الظهور خلال فترة التعاقد.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Visual Identity -->
+                <div class="card-inner p-6 rounded-2xl border-t-4 border-amber-400">
+                    <h3 class="text-xl font-extrabold text-amber-300 mb-4 flex items-center gap-2">
+                        <span>🎨</span>
+                        <span>2. تطوير وتحسين الهوية البصرية للموقع (Visual Identity)</span>
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-slate-200">
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-amber-400 font-bold">•</span>
+                            <span>مراجعة الهوية البصرية الحالية للموقع وتقييم مدى توافقها مع طبيعة نشاط المركز.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-amber-400 font-bold">•</span>
+                            <span>تطوير التناسق البصري بين الألوان والخطوط والعناصر التصميمية.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-amber-400 font-bold">•</span>
+                            <span>تحسين المظهر العام للصفحات بما يعكس الطابع الاحترافي والإنساني للمركز.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-amber-400 font-bold">•</span>
+                            <span>تحسين طريقة عرض الخدمات العلاجية والتخصصات المختلفة.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-amber-400 font-bold">•</span>
+                            <span>تطوير أسلوب عرض الصور والعناصر المرئية.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-amber-400 font-bold">•</span>
+                            <span>تحسين التناسق بين عناصر التصميم وتجربة المستخدم.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item col-span-1 sm:col-span-2 flex items-start gap-2">
+                            <span class="text-amber-400 font-bold">•</span>
+                            <span>توحيد الطابع البصري لمختلف صفحات الموقع.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Technical SEO -->
+                <div class="card-inner p-6 rounded-2xl border-t-4 border-indigo-500">
+                    <h3 class="text-xl font-extrabold text-indigo-300 mb-4 flex items-center gap-2">
+                        <span>⚙️</span>
+                        <span>3. التهيئة البرمجية للموقع (Technical SEO)</span>
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-slate-200">
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-indigo-400 font-bold">•</span>
+                            <span>فحص البنية البرمجية للموقع وتحديد المشكلات التقنية المؤثرة على ظهوره في محركات البحث.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-indigo-400 font-bold">•</span>
+                            <span>تحسين هيكلة الموقع وتنظيم الصفحات.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-indigo-400 font-bold">•</span>
+                            <span>مراجعة الروابط الداخلية والخارجية ومعالجة الروابط المعطلة.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-indigo-400 font-bold">•</span>
+                            <span>تحسين ملفات Sitemap وRobots.txt.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-indigo-400 font-bold">•</span>
+                            <span>مراجعة إعدادات الفهرسة وأرشفة الصفحات.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-indigo-400 font-bold">•</span>
+                            <span>معالجة أخطاء الزحف والفهرسة وفقاً لإمكانيات النظام البرمجي.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-indigo-400 font-bold">•</span>
+                            <span>تحسين توافق الموقع مع متطلبات محركات البحث.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-indigo-400 font-bold">•</span>
+                            <span>تهيئة البيانات المنظمة (Structured Data) المناسبة لطبيعة نشاط المركز.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item col-span-1 sm:col-span-2 flex items-start gap-2">
+                            <span class="text-indigo-400 font-bold">•</span>
+                            <span>التأكد من توافق الموقع مع مختلف الأجهزة والمتصفحات.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Speed Optimization -->
+                <div class="card-inner p-6 rounded-2xl border-t-4 border-purple-500">
+                    <h3 class="text-xl font-extrabold text-purple-300 mb-4 flex items-center gap-2">
+                        <span>⚡</span>
+                        <span>4. تحسين سرعة الموقع والأداء (Website Speed Optimization)</span>
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-slate-200">
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-purple-400 font-bold">•</span>
+                            <span>إجراء فحص شامل لسرعة تحميل الموقع.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-purple-400 font-bold">•</span>
+                            <span>تحليل مؤشرات الأداء الأساسية (Core Web Vitals).</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-purple-400 font-bold">•</span>
+                            <span>تحسين أحجام الصور وضغط الملفات المرئية.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-purple-400 font-bold">•</span>
+                            <span>تحسين تحميل ملفات CSS وJavaScript.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-purple-400 font-bold">•</span>
+                            <span>تقليل الملفات والموارد البرمجية غير الضرورية.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-purple-400 font-bold">•</span>
+                            <span>تحسين آلية تحميل عناصر الصفحات.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-purple-400 font-bold">•</span>
+                            <span>معالجة العناصر التي تؤثر على سرعة تحميل الموقع.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item flex items-start gap-2">
+                            <span class="text-purple-400 font-bold">•</span>
+                            <span>تحسين أداء الموقع على الهواتف المحمولة وأجهزة الكمبيوتر.</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 motion-item col-span-1 sm:col-span-2 flex items-start gap-2">
+                            <span class="text-purple-400 font-bold">•</span>
+                            <span>إجراء اختبارات الأداء بعد تنفيذ التحسينات.</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Colorful Section Divider -->
+        <div class="section-divider"></div>
+
+        <!-- ثالثاً: خطة التنفيذ الزمنية -->
+        <section class="card-dark rounded-3xl p-6 sm:p-8 shadow-2xl reveal">
+            <div class="border-r-4 border-indigo-500 pr-4 mb-6">
+                <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
+                    <span class="text-indigo-400 font-mono text-3xl">03</span>
+                    <span>ثالثاً: خطة التنفيذ الزمنية</span>
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs sm:text-sm">
+                <!-- الشهر الأول -->
+                <div class="card-inner p-6 rounded-2xl border-t-4 border-blue-500">
+                    <span class="bg-blue-950 text-blue-300 font-black px-3.5 py-1 rounded-full text-xs border border-blue-400/40 inline-block mb-3">الشهر الأول</span>
+                    <h3 class="font-extrabold text-blue-300 text-base mb-3">التحليل والتأسيس</h3>
+                    <ul class="space-y-2.5 text-slate-300">
+                        <li class="flex items-start gap-1.5"><span class="text-blue-400">•</span> إجراء الفحص الفني والتسويقي الشامل للموقع.</li>
+                        <li class="flex items-start gap-1.5"><span class="text-blue-400">•</span> دراسة الكلمات المفتاحية وتحليل المنافسين.</li>
+                        <li class="flex items-start gap-1.5"><span class="text-blue-400">•</span> تحديد المشكلات التقنية والبرمجية.</li>
+                        <li class="flex items-start gap-1.5"><span class="text-blue-400">•</span> مراجعة الهوية البصرية ووضع تصور التحسين.</li>
+                        <li class="flex items-start gap-1.5"><span class="text-blue-400">•</span> بدء تنفيذ التحسينات الأساسية للسيو والبنية التقنية.</li>
+                    </ul>
+                </div>
+
+                <!-- الشهر الثاني -->
+                <div class="card-inner p-6 rounded-2xl border-t-4 border-purple-500">
+                    <span class="bg-purple-950 text-purple-300 font-black px-3.5 py-1 rounded-full text-xs border border-purple-400/40 inline-block mb-3">الشهر الثاني</span>
+                    <h3 class="font-extrabold text-purple-300 text-base mb-3">التطوير والتحسين</h3>
+                    <ul class="space-y-2.5 text-slate-300">
+                        <li class="flex items-start gap-1.5"><span class="text-purple-400">•</span> استكمال أعمال التهيئة البرمجية.</li>
+                        <li class="flex items-start gap-1.5"><span class="text-purple-400">•</span> تنفيذ تحسينات الهوية البصرية للموقع.</li>
+                        <li class="flex items-start gap-1.5"><span class="text-purple-400">•</span> العمل على تحسين سرعة التحميل والأداء.</li>
+                        <li class="flex items-start gap-1.5"><span class="text-purple-400">•</span> تحسين محتوى الصفحات والعناوين والوصف التعريفي.</li>
+                        <li class="flex items-start gap-1.5"><span class="text-purple-400">•</span> تنفيذ التحسينات الداخلية لمحركات البحث.</li>
+                        <li class="flex items-start gap-1.5"><span class="text-purple-400">•</span> العمل على تحسين الظهور في نتائج البحث المحلية.</li>
+                    </ul>
+                </div>
+
+                <!-- الشهر الثالث -->
+                <div class="card-inner p-6 rounded-2xl border-t-4 border-amber-400">
+                    <span class="bg-amber-950 text-amber-300 font-black px-3.5 py-1 rounded-full text-xs border border-amber-400/40 inline-block mb-3">الشهر الثالث</span>
+                    <h3 class="font-extrabold text-amber-300 text-base mb-3">المتابعة والتطوير</h3>
+                    <ul class="space-y-2.5 text-slate-300">
+                        <li class="flex items-start gap-1.5"><span class="text-amber-400">•</span> استكمال التحسينات الفنية والتسويقية.</li>
+                        <li class="flex items-start gap-1.5"><span class="text-amber-400">•</span> متابعة أداء الكلمات المفتاحية المستهدفة.</li>
+                        <li class="flex items-start gap-1.5"><span class="text-amber-400">•</span> مراجعة نتائج الفهرسة والظهور في محركات البحث.</li>
+                        <li class="flex items-start gap-1.5"><span class="text-amber-400">•</span> تقييم سرعة الموقع ومؤشرات الأداء.</li>
+                        <li class="flex items-start gap-1.5"><span class="text-amber-400">•</span> معالجة المشكلات التي تظهر خلال فترة التنفيذ.</li>
+                        <li class="flex items-start gap-1.5"><span class="text-amber-400">•</span> تقديم تقرير ختامي يوضح الأعمال المنفذة ومؤشرات الأداء والتوصيات المستقبلية.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Colorful Section Divider -->
+        <div class="section-divider"></div>
+
+        <!-- رابعاً: المخرجات المتوقعة -->
+        <section class="card-dark rounded-3xl p-6 sm:p-8 shadow-2xl reveal">
+            <div class="border-r-4 border-blue-500 pr-4 mb-6">
+                <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
+                    <span class="text-blue-400 font-mono text-3xl">04</span>
+                    <span>رابعاً: المخرجات المتوقعة</span>
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 text-xs sm:text-sm text-slate-200">
+                <div class="card-inner p-4 rounded-xl border border-slate-800 motion-item flex items-start gap-2.5">
+                    <span class="text-blue-400 font-bold text-lg">•</span>
+                    <span>تحسين البنية التقنية للموقع الإلكتروني.</span>
+                </div>
+                <div class="card-inner p-4 rounded-xl border border-slate-800 motion-item flex items-start gap-2.5">
+                    <span class="text-blue-400 font-bold text-lg">•</span>
+                    <span>تطوير المظهر البصري وتجربة المستخدم.</span>
+                </div>
+                <div class="card-inner p-4 rounded-xl border border-slate-800 motion-item flex items-start gap-2.5">
+                    <span class="text-blue-400 font-bold text-lg">•</span>
+                    <span>تحسين سرعة تحميل صفحات الموقع.</span>
+                </div>
+                <div class="card-inner p-4 rounded-xl border border-slate-800 motion-item flex items-start gap-2.5">
+                    <span class="text-blue-400 font-bold text-lg">•</span>
+                    <span>رفع جاهزية الموقع لمحركات البحث.</span>
+                </div>
+                <div class="card-inner p-4 rounded-xl border border-slate-800 motion-item flex items-start gap-2.5">
+                    <span class="text-blue-400 font-bold text-lg">•</span>
+                    <span>تحسين استهداف الكلمات المفتاحية المرتبطة بخدمات المركز.</span>
+                </div>
+                <div class="card-inner p-4 rounded-xl border border-slate-800 motion-item flex items-start gap-2.5">
+                    <span class="text-blue-400 font-bold text-lg">•</span>
+                    <span>تعزيز فرص الظهور في نتائج البحث المحلية.</span>
+                </div>
+                <div class="card-inner p-4 rounded-xl border border-slate-800 motion-item col-span-1 sm:col-span-2 lg:col-span-3 flex items-start gap-2.5">
+                    <span class="text-blue-400 font-bold text-lg">•</span>
+                    <span>تحسين جودة الصفحات والمحتوى بما يتوافق مع متطلبات SEO.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Colorful Section Divider -->
+        <div class="section-divider"></div>
+
+        <!-- خامساً: العرض المالي -->
+        <section class="card-dark rounded-3xl p-6 sm:p-8 shadow-2xl reveal">
+            <div class="border-r-4 border-amber-400 pr-4 mb-6">
+                <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
+                    <span class="text-amber-400 font-mono text-3xl">05</span>
+                    <span>خامساً: العرض المالي</span>
+                </h2>
+            </div>
+
+            <div class="overflow-x-auto rounded-2xl border border-slate-700/80 shadow-2xl mb-6">
+                <table class="w-full text-right text-xs sm:text-sm">
+                    <thead class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-amber-300 font-bold border-b border-slate-700">
+                        <tr>
+                            <th class="p-4 sm:p-5">البيان</th>
+                            <th class="p-4 sm:p-5 text-left">القيمة</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/90 text-slate-200 bg-slate-950/60">
+                        <tr class="hover:bg-slate-800/50 transition-colors">
+                            <td class="p-4 sm:p-5 font-bold text-slate-200">السعر الأساسي للخدمة</td>
+                            <td class="p-4 sm:p-5 text-left font-bold text-slate-300">5,000 ريال سعودي</td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/50 transition-colors">
+                            <td class="p-4 sm:p-5 font-bold text-blue-400">الخصم المقدم من شركة كاف</td>
+                            <td class="p-4 sm:p-5 text-left font-bold text-blue-400">1,500 ريال سعودي</td>
+                        </tr>
+                        <tr class="bg-amber-950/40 hover:bg-amber-900/40 transition-colors font-black">
+                            <td class="p-4 sm:p-5 text-amber-300 text-base sm:text-lg">السعر بعد الخصم</td>
+                            <td class="p-4 sm:p-5 text-left text-amber-300 text-lg sm:text-2xl">3,500 ريال سعودي</td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/50 transition-colors">
+                            <td class="p-4 sm:p-5 font-bold text-slate-300">مدة تنفيذ المشروع</td>
+                            <td class="p-4 sm:p-5 text-left font-bold text-purple-300">3 أشهر</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="bg-gradient-to-r from-blue-950 via-slate-900 to-purple-950 p-6 rounded-2xl border border-amber-400/60 text-center shadow-2xl">
+                <p class="text-sm sm:text-lg font-bold text-amber-300 leading-relaxed">
+                    إجمالي قيمة التعاقد: 3,500 ريال سعودي فقط لا غير، مقابل تنفيذ نطاق الخدمات الموضح أعلاه طوال مدة التعاقد البالغة ثلاثة أشهر.
+                </p>
+            </div>
+        </section>
+
+        <!-- Colorful Section Divider -->
+        <div class="section-divider"></div>
+
+        <!-- سادساً: الشروط والملاحظات -->
+        <section class="card-dark rounded-3xl p-6 sm:p-8 shadow-2xl reveal">
+            <div class="border-r-4 border-amber-400 pr-4 mb-6">
+                <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
+                    <span class="text-amber-400 font-mono text-3xl">06</span>
+                    <span>سادساً: الشروط والملاحظات</span>
+                </h2>
+            </div>
+
+            <div class="space-y-3 text-xs sm:text-sm text-slate-200">
+                <div class="card-inner p-4 rounded-xl border border-slate-800 motion-item flex items-start gap-2.5">
+                    <span class="text-amber-400 font-bold text-lg">•</span>
+                    <span>مدة تنفيذ المشروع ثلاثة أشهر تبدأ من تاريخ اعتماد العرض وتوفير صلاحيات الوصول اللازمة للموقع.</span>
+                </div>
+                <div class="card-inner p-4 rounded-xl border border-slate-800 motion-item flex items-start gap-2.5">
+                    <span class="text-amber-400 font-bold text-lg">•</span>
+                    <span>يتطلب تنفيذ الأعمال توفير صلاحيات إدارة الموقع والاستضافة والأدوات المرتبطة به.</span>
+                </div>
+                <div class="card-inner p-4 rounded-xl border border-slate-800 motion-item flex items-start gap-2.5">
+                    <span class="text-amber-400 font-bold text-lg">•</span>
+                    <span>يتم تنفيذ الأعمال التقنية وفقاً لإمكانيات النظام البرمجي المستخدم في الموقع.</span>
+                </div>
+                <div class="card-inner p-4 rounded-xl border border-slate-800 motion-item flex items-start gap-2.5">
+                    <span class="text-amber-400 font-bold text-lg">•</span>
+                    <span>لا تتضمن الخدمة ضمان الوصول إلى ترتيب محدد في نتائج محركات البحث، نظراً لارتباط النتائج بعدة عوامل خارجية ومتغيرة.</span>
+                </div>
+                <div class="card-inner p-4 rounded-xl border border-slate-800 motion-item flex items-start gap-2.5">
+                    <span class="text-amber-400 font-bold text-lg">•</span>
+                    <span>يتم تقديم تقارير دورية لمتابعة سير العمل وقياس مؤشرات الأداء.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Colorful Section Divider -->
+        <div class="section-divider"></div>
+
+        <!-- ختاماً -->
+        <section class="card-dark rounded-3xl p-6 sm:p-8 shadow-2xl reveal">
+            <div class="border-r-4 border-blue-500 pr-4 mb-6">
+                <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
+                    <span class="text-blue-400 text-3xl">✨</span>
+                    <span>ختاماً</span>
+                </h2>
+            </div>
+
+            <div class="space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                <p class="bg-slate-950/80 p-5 rounded-2xl border border-slate-800 text-slate-200 leading-relaxed">
+                    تسعى شركة كاف لتطوير الأعمال إلى بناء حضور رقمي احترافي ومستدام لمركز منابر الأمل، من خلال الجمع بين التحسين التقني والتطوير البصري واستراتيجيات تحسين محركات البحث، بما يسهم في تعزيز وصول المركز إلى جمهوره المستهدف ودعم نمو حضوره الرقمي.
+                </p>
+            </div>
+
+            <div class="pt-8 border-t border-slate-800 text-center mt-8">
+                <a href="https://kaafmarketing.sa/" target="_blank" rel="noopener noreferrer" class="hover:underline inline-block group">
+                    <p class="text-2xl font-black text-blue-400 group-hover:text-blue-300 transition-colors">شركة كاف لتطوير الأعمال</p>
+                    <p class="text-xs sm:text-sm font-semibold text-amber-300 mt-1">شريككم في التطوير والنمو الرقمي.</p>
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-16 text-center text-blue-200/70 text-xs sm:text-sm py-8 border-t border-blue-900/80 bg-slate-950/90">
+        <a href="https://kaafmarketing.sa/" target="_blank" rel="noopener noreferrer" class="hover:underline font-extrabold text-blue-300 block mb-1 text-sm sm:text-base">
+            شركة كاف لتطوير الأعمال © 2026
+        </a>
+        <p class="text-slate-400 text-xs">عرض سعر فني ومالي — خدمة تحسين محركات البحث والتطوير الشامل لـ مركز منابر الأمل لتأهيل الأطفال</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const reveals = document.querySelectorAll(".reveal");
+
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.classList.add("active");
+                        }, index * 80);
+                    }
+                });
+            }, {
+                threshold: 0.08
+            });
+
+            reveals.forEach(reveal => revealObserver.observe(reveal));
+        });
+    </script>
+</body>
+</html>
